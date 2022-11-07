@@ -6,6 +6,8 @@ import 'package:shara_movies/core/data/resource.dart';
 import '../remote/model/movie_details_response.dart';
 
 const String errorMessage = "An error occurred";
+const String titleType =
+    "movie,tvSeries,short,tvEpisode,tvMiniSeries,tvMovie,tvSpecial,tvShort,video";
 
 @Singleton()
 class MovieRepository {
@@ -20,7 +22,7 @@ class MovieRepository {
   }) async {
     Resource<List<MovieSummary>>resource;
     try {
-      final response = await _movieApiClient.findMovie(title, limit);
+      final response = await _movieApiClient.findMovie(title, titleType, limit,);
       resource = Resource.success(response.results ?? []);
     } catch (e) {
       resource = Resource.failure(errorMessage: "");

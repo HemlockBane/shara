@@ -44,4 +44,10 @@ const _$TitleTypeEnumMap = {
   TitleType.tvSeries: 'tvSeries',
   TitleType.movie: 'movie',
   TitleType.video: 'video',
+  TitleType.short: 'short',
+  TitleType.tvEpisode: 'tvEpisode',
+  TitleType.tvMiniSeries: 'tvMiniSeries',
+  TitleType.tvMovie: 'tvMovie',
+  TitleType.tvSpecial: 'tvSpecial',
+  TitleType.tvShort: 'tvShort',
 };

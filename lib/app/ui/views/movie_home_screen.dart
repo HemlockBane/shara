@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:shara_movies/core/data/remote/movie_api_client.dart';
-import 'package:shara_movies/core/data/repository/movie_repository.dart';
-import 'package:shara_movies/core/di/di.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shara_movies/app/ui/view_model/movie_home_view_model.dart';
+import 'package:shara_movies/core/data/remote/model/movie_list_response.dart';
 
 class MovieHomeScreen extends StatefulWidget {
   const MovieHomeScreen({super.key, required this.title});
+
   final String title;
 
   @override
@@ -12,7 +13,6 @@ class MovieHomeScreen extends StatefulWidget {
 }
 
 class _MovieHomeScreenState extends State<MovieHomeScreen> {
-
   @override
   void initState() {
     super.initState();
@@ -20,11 +20,212 @@ class _MovieHomeScreenState extends State<MovieHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => MovieHomeViewModel(),
+      child: const MovieHomeView(),
+    );
+  }
+}
+
+class MovieHomeView extends StatelessWidget {
+  const MovieHomeView({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(widget.title),
+      body: Column(
+        children: const [
+          _SearchBar(),
+          _SearchBody(),
+        ],
+      ),
+    );
+  }
+}
+
+class _SearchBody extends StatefulWidget {
+  const _SearchBody({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  State<_SearchBody> createState() => _SearchBodyState();
+}
+
+class _SearchBodyState extends State<_SearchBody> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: BlocBuilder<MovieHomeViewModel, MovieHomeUiState>(
+        builder: (ctx, state) {
+          if (state is DefaultState) {
+            return const DefaultView();
+          }
+          if (state is LoadingState) {
+            return const LoadingView();
+          }
+
+          if (state is FailureState) {
+            return const FailureView();
+          }
+
+          if (state is SuccessState) {
+            return state.data.isEmpty
+                ? const EmptyView()
+                : MovieListView(data: state.data);
+          }
+
+          return const SizedBox();
+        },
+      ),
+    );
+  }
+}
+
+class _SearchBar extends StatefulWidget {
+  const _SearchBar({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  State<_SearchBar> createState() => _SearchBarState();
+}
+
+class _SearchBarState extends State<_SearchBar> {
+  final _textController = TextEditingController();
+  late MovieHomeViewModel _movieHomeViewModel;
+
+  @override
+  void initState() {
+    super.initState();
+    _movieHomeViewModel = context.read<MovieHomeViewModel>();
+  }
+
+  @override
+  void dispose() {
+    _textController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 21, right: 21, top: 40),
+      child: TextFormField(
+        controller: _textController,
+        decoration: InputDecoration(
+          filled: true,
+          border: OutlineInputBorder(
+            borderSide: BorderSide.none,
+            borderRadius: BorderRadius.circular(30),
+          ),
+          hintText: "Type to search...",
+          prefixIcon: const Icon(
+            Icons.search,
+            color: Colors.grey,
+          ),
         ),
-        body: Container()
+        onChanged: (String text) {
+          _movieHomeViewModel.findMovie(title: text.trim());
+        },
+      ),
+    );
+  }
+}
+
+class DefaultView extends StatelessWidget {
+  const DefaultView({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Text("Search for a movie or show..."),
+    );
+  }
+}
+
+class EmptyView extends StatelessWidget {
+  const EmptyView({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Text("No results for your search..."),
+    );
+  }
+}
+
+class LoadingView extends StatelessWidget {
+  const LoadingView({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: CircularProgressIndicator(),
+    );
+  }
+}
+
+class FailureView extends StatelessWidget {
+  const FailureView({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Text("Search failed..."),
+    );
+  }
+}
+
+class MovieListView extends StatelessWidget {
+  const MovieListView({Key? key, required this.data}) : super(key: key);
+
+  final List<MovieSummary> data;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.separated(
+      itemCount: data.length,
+      separatorBuilder: (_, __) => const SizedBox(),
+      itemBuilder: (ctx, idx) {
+        final summary = data[idx];
+        return MovieListItemView(
+          data: summary,
+        );
+      },
+    );
+  }
+}
+
+class MovieListItemView extends StatelessWidget {
+  const MovieListItemView({
+    Key? key,
+    required this.data,
+  }) : super(key: key);
+
+  final MovieSummary data;
+
+  @override
+  Widget build(BuildContext context) {
+    final title = data.title ?? "--";
+    final year = data.year?.toString() ?? "--";
+    final imageUrl = data.image?.url ?? "--";
+
+    return ListTile(
+      leading: AspectRatio(
+        aspectRatio: 1,
+        child: Image.network(
+          imageUrl,
+          fit: BoxFit.cover,
+        ),
+      ),
+      title: Text(title),
+      subtitle: Text(year),
     );
   }
 }

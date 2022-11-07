@@ -23,11 +23,13 @@ class _MovieApiClient implements MovieApiClient {
   @override
   Future<MovieListResponse> findMovie(
     title,
+    titleType,
     limit,
   ) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'title': title,
+      r'titleType': titleType,
       r'limit': limit,
     };
     final _headers = <String, dynamic>{};

@@ -6,5 +6,17 @@ enum TitleType {
   @JsonValue("movie")
   movie,
   @JsonValue("video")
-  video
+  video,
+  @JsonValue("short")
+  short,
+  @JsonValue("tvEpisode")
+  tvEpisode,
+  @JsonValue("tvMiniSeries")
+  tvMiniSeries,
+  @JsonValue("tvMovie")
+  tvMovie,
+  @JsonValue("tvSpecial")
+  tvSpecial,
+  @JsonValue("tvShort")
+  tvShort
 }
