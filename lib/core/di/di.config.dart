@@ -9,9 +9,10 @@ import 'package:dio/dio.dart' as _i3;
 import 'package:get_it/get_it.dart' as _i1;
 import 'package:injectable/injectable.dart' as _i2;
 
+import '../../app/domain/get_movie_details_usecase.dart' as _i6;
 import '../data/remote/movie_api_client.dart' as _i4;
 import '../data/repository/movie_repository.dart' as _i5;
-import 'module.dart' as _i6; // ignore_for_file: unnecessary_lambdas
+import 'module.dart' as _i7; // ignore_for_file: unnecessary_lambdas
 
 // ignore_for_file: lines_longer_than_80_chars
 /// initializes the registration of provided dependencies inside of [GetIt]
@@ -30,7 +31,9 @@ _i1.GetIt $initGetIt(
   gh.singleton<_i4.MovieApiClient>(registerModule.movieApiClient);
   gh.singleton<_i5.MovieRepository>(
       _i5.MovieRepository(movieApiClient: get<_i4.MovieApiClient>()));
+  gh.singleton<_i6.GetMovieDetailsUseCase>(
+      _i6.GetMovieDetailsUseCase(movieRepository: get<_i5.MovieRepository>()));
   return get;
 }
 
-class _$RegisterModule extends _i6.RegisterModule {}
+class _$RegisterModule extends _i7.RegisterModule {}

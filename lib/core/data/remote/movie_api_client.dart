@@ -5,6 +5,8 @@ import 'package:dio/dio.dart' hide Headers;
 import 'package:shara_movies/core/api_config.dart';
 import 'package:shara_movies/core/data/remote/model/movie_details_response.dart';
 import 'package:shara_movies/core/data/remote/model/movie_list_response.dart';
+import 'package:shara_movies/core/data/remote/model/movie_ratings_response.dart';
+import 'package:shara_movies/core/data/remote/model/movie_synopsis_response.dart';
 
 part 'movie_api_client.g.dart';
 
@@ -19,4 +21,11 @@ abstract class MovieApiClient{
 
   @GET("/title/get-details")
   Future<MovieDetailsResponse> getMovieDetails(@Query("tconst") String titleId);
+
+  @GET("/title/get-synopses")
+  Future<List<MovieSynopsisResponse>> getMovieSynopsis(@Query("tconst") String titleId);
+
+  @GET("/title/get-ratings")
+  Future<MovieRatingsResponse> getMovieRatings(@Query("tconst") String titleId);
+
 }

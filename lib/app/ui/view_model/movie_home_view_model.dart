@@ -45,15 +45,11 @@ class MovieHomeViewModel extends Cubit<MovieHomeUiState> {
 
   Future<void> _triggerSearch(String title) async {
     emit(LoadingState());
-    final resource = await _movieRepository.findMovie(title: title);
-    if (resource is Failure<List<MovieSummary>>) {
+    try {
+      final response = await _movieRepository.findMovie(title: title);
+      emit(SuccessState(data: response));
+    } on Exception catch (e) {
       emit(FailureState());
-    } else {
-      final movies = resource.data ?? [];
-      if (movies.isEmpty) {
-        emit(SuccessState(data: []));
-      }
-      emit(SuccessState(data: movies));
     }
   }
 }

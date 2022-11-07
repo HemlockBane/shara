@@ -1,6 +1,8 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:shara_movies/core/data/model/movie.dart';
 import 'package:shara_movies/core/data/remote/model/image.dart';
 import 'package:shara_movies/core/data/remote/model/title_type.dart';
+import 'package:shara_movies/core/utils/utils.dart';
 
 part 'movie_details_response.g.dart';
 
@@ -36,4 +38,18 @@ class MovieDetailsResponse {
 
   Map<String, dynamic> toJson() => _$MovieDetailsResponseToJson(this);
 }
+
+extension MovieDetailsResponseX on MovieDetailsResponse {
+  Movie get toMovie {
+    return Movie(
+      id: beautifyTitleId(id),
+      title: title,
+      image: image,
+      titleType: titleType,
+      durationInMinutes: runningTimeInMinutes,
+      year: year,
+    );
+  }
+}
+
 

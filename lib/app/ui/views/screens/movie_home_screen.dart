@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shara_movies/app/ui/view_model/movie_home_view_model.dart';
+import 'package:shara_movies/app/ui/views/screens/movie_details_screen.dart';
 import 'package:shara_movies/core/data/remote/model/movie_list_response.dart';
+import 'package:shara_movies/core/navigation/app_navigation.dart';
+import 'package:shara_movies/core/utils/utils.dart';
+
+import '../widgets/widgets.dart';
 
 class MovieHomeScreen extends StatefulWidget {
-  const MovieHomeScreen({super.key, required this.title});
-
-  final String title;
+  const MovieHomeScreen({super.key});
 
   @override
   State<MovieHomeScreen> createState() => _MovieHomeScreenState();
@@ -71,12 +74,12 @@ class _SearchBodyState extends State<_SearchBody> {
           }
 
           if (state is FailureState) {
-            return const FailureView();
+            return const FailureView(message: "Search failed...",);
           }
 
           if (state is SuccessState) {
             return state.data.isEmpty
-                ? const EmptyView()
+                ? const EmptyView(message: "No results for your search...")
                 : MovieListView(data: state.data);
           }
 
@@ -149,38 +152,6 @@ class DefaultView extends StatelessWidget {
   }
 }
 
-class EmptyView extends StatelessWidget {
-  const EmptyView({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text("No results for your search..."),
-    );
-  }
-}
-
-class LoadingView extends StatelessWidget {
-  const LoadingView({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: CircularProgressIndicator(),
-    );
-  }
-}
-
-class FailureView extends StatelessWidget {
-  const FailureView({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text("Search failed..."),
-    );
-  }
-}
 
 class MovieListView extends StatelessWidget {
   const MovieListView({Key? key, required this.data}) : super(key: key);
@@ -226,6 +197,10 @@ class MovieListItemView extends StatelessWidget {
       ),
       title: Text(title),
       subtitle: Text(year),
+      onTap: (){
+        final args = MovieDetailsScreenArgs(title: title, titleId: beautifyTitleId(data.id));
+        Navigator.of(context).pushNamed(AppNavigation.movieDetails, arguments: args);
+      },
     );
   }
 }

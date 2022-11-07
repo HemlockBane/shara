@@ -1,7 +1,9 @@
 import 'package:injectable/injectable.dart';
+import 'package:shara_movies/core/data/model/movie.dart';
 import 'package:shara_movies/core/data/remote/model/movie_list_response.dart';
+import 'package:shara_movies/core/data/remote/model/movie_ratings_response.dart';
+import 'package:shara_movies/core/data/remote/model/movie_synopsis_response.dart';
 import 'package:shara_movies/core/data/remote/movie_api_client.dart';
-import 'package:shara_movies/core/data/resource.dart';
 
 import '../remote/model/movie_details_response.dart';
 
@@ -16,28 +18,43 @@ class MovieRepository {
 
   final MovieApiClient _movieApiClient;
 
-  Future<Resource<List<MovieSummary>>> findMovie({
+  Future<List<MovieSummary>> findMovie({
     required String title,
     int limit = 20,
   }) async {
-    Resource<List<MovieSummary>>resource;
     try {
       final response = await _movieApiClient.findMovie(title, titleType, limit,);
-      resource = Resource.success(response.results ?? []);
+      return response.results ?? [];
     } catch (e) {
-      resource = Resource.failure(errorMessage: "");
+      rethrow;
     }
-    return resource;
   }
 
-  Future<Resource<MovieDetailsResponse>> getMovieDetails({required String id}) async {
-    Resource<MovieDetailsResponse> resource;
+  Future<Movie> getMovieDetails({required String id}) async {
     try {
-      final response = await _movieApiClient.getMovieDetails(id);
-      resource = Resource.success(response);
+      MovieDetailsResponse response = await _movieApiClient.getMovieDetails(id);
+      final movie = response.toMovie;
+      return movie;
     } catch (e) {
-      resource = Resource.failure(errorMessage: errorMessage);
+      rethrow;
     }
-    return resource;
+  }
+
+  Future<MovieSynopsisResponse> getMovieSynopsis({required String id}) async {
+    try {
+      final response = await _movieApiClient.getMovieSynopsis(id);
+      return response.first;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<MovieRatingsResponse> getMovieRatings({required String id}) async {
+    try {
+      MovieRatingsResponse response = await _movieApiClient.getMovieRatings(id);
+      return response;
+    } catch (e) {
+      rethrow;
+    }
   }
 }

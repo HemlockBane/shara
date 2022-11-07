@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
-import 'package:shara_movies/app/ui/views/movie_home_screen.dart';
+import 'package:shara_movies/app/ui/views/screens/movie_home_screen.dart';
+import 'package:shara_movies/core/navigation/app_navigation.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -13,7 +14,8 @@ class App extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MovieHomeScreen(title: 'Flutter Demo Home Page'),
+      home: const MovieHomeScreen(),
+      onGenerateRoute: AppNavigation.generateRouteWithSettings,
     );
   }
 }
