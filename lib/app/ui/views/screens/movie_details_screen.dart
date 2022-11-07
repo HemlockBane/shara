@@ -113,7 +113,7 @@ class _SuccessView extends StatelessWidget {
             ],
           ),
         ),
-        // MovieSynopsis(synopsis: movie?.synopsis,)
+        MovieSynopsis(synopsis: movie?.synopsis,)
       ],
     );
   }
@@ -147,11 +147,11 @@ class MovieSynopsis extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Synopsis", style: TextStyle(fontSize: 24),),
-          SizedBox(
-            height: 8,
+          const Text("Synopsis", style: TextStyle(fontSize: 22),),
+          const SizedBox(
+            height: 5,
           ),
-          Text(synopsis ?? "", style: TextStyle(fontSize: 18),),
+          Text(synopsis ?? "", style: const TextStyle(fontSize: 18),),
         ],
       ),
     );

@@ -15,11 +15,11 @@ class GetMovieDetailsUseCase {
     try {
       final movieDetails = await _movieRepository.getMovieDetails(id: id);
       final movieRatings = await _movieRepository.getMovieRatings(id: id);
-      // final movieSynopsis = await _movieRepository.getMovieSynopsis(id: id);
+      final movieSynopsis = await _movieRepository.getMovieSynopsis(id: id);
 
       final movie = movieDetails.copyWith(
         rating: movieRatings.rating,
-        // synopsis: movieSynopsis.text
+        synopsis: movieSynopsis.text
       );
       yield Resource.success(movie);
     } on Exception catch (e) {

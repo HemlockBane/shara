@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:shara_movies/core/data/remote/model/movie_list_response.dart';
 import 'package:shara_movies/core/data/repository/movie_repository.dart';
-import 'package:shara_movies/core/data/resource.dart';
 import 'package:shara_movies/core/di/di.dart';
 
 abstract class MovieHomeUiState {}
