@@ -34,11 +34,8 @@ class MovieDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => MovieDetailsViewModel(),
-      child: MovieDetailsView(
-        args: movieDetailsScreenArgs,
-      ),
+    return MovieDetailsView(
+      args: movieDetailsScreenArgs,
     );
   }
 }
@@ -67,25 +64,19 @@ class _MovieDetailsViewState extends State<MovieDetailsView> {
 
   @override
   Widget build(BuildContext context) {
+
+
+    final uiState = _detailsViewModel.uiStateStream;
+
     return Scaffold(
       appBar: AppBar(title: Text(widget.args.title ?? "")),
-      body: BlocBuilder<MovieDetailsViewModel, MovieDetailsUiState>(
-        builder: (ctx, state) {
-          if (state is LoadingState) {
-            return const LoadingView();
-          }
+      body: StreamBuilder(
+        stream: uiState,
+        builder: (ctx, AsyncSnapshot<MovieDetailsUiState> snapshot) {
+          
 
-          if (state is FailureState) {
-            const FailureView(message: "Error fetching movie details");
-          }
-
-          if (state is SuccessState) {
-            return _SuccessView(movie: state.data,);
-          }
-
-          return const SizedBox();
         },
-      ),
+      )
     );
   }
 }

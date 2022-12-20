@@ -4,6 +4,7 @@ import 'package:shara_movies/core/data/remote/model/movie_list_response.dart';
 import 'package:shara_movies/core/data/remote/model/movie_ratings_response.dart';
 import 'package:shara_movies/core/data/remote/model/movie_synopsis_response.dart';
 import 'package:shara_movies/core/data/remote/movie_api_client.dart';
+import 'package:shara_movies/core/data/resource.dart';
 
 import '../remote/model/movie_details_response.dart';
 
@@ -18,43 +19,51 @@ class MovieRepository {
 
   final MovieApiClient _movieApiClient;
 
-  Future<List<MovieSummary>> findMovie({
+  Future<Resource<List<MovieSummary>>> findMovie({
     required String title,
     int limit = 20,
   }) async {
     try {
-      final response = await _movieApiClient.findMovie(title, titleType, limit,);
-      return response.results ?? [];
+      final response = await _movieApiClient.findMovie(
+        title: title,
+        titleType: titleType,
+        limit: limit,
+      );
+      return Resource.success(response.results ?? []);
     } catch (e) {
-      rethrow;
+      return Resource.failure(errorMessage: "error");
     }
   }
 
-  Future<Movie> getMovieDetails({required String id}) async {
+  Future<Resource<Movie>> getMovieDetails({required String id}) async {
     try {
-      MovieDetailsResponse response = await _movieApiClient.getMovieDetails(id);
+      MovieDetailsResponse response =
+          await _movieApiClient.getMovieDetails(titleId: id);
       final movie = response.toMovie;
-      return movie;
+      return Resource.success(movie);
     } catch (e) {
-      rethrow;
+      return Resource.failure(errorMessage: "error");
     }
   }
 
-  Future<MovieSynopsisResponse> getMovieSynopsis({required String id}) async {
+  Future<Resource<List<MovieSynopsisResponse>>> getMovieSynopsis(
+      {required String id}) async {
     try {
-      final response = await _movieApiClient.getMovieSynopsis(id);
-      return response.first;
+      final response = await _movieApiClient.getMovieSynopsis(titleId: id);
+      return Resource.success(response);
     } catch (e) {
-      rethrow;
+      return Resource.failure(errorMessage: "error");
     }
   }
 
-  Future<MovieRatingsResponse> getMovieRatings({required String id}) async {
+  Future<Resource<MovieRatingsResponse>> getMovieRatings(
+      {required String id}) async {
     try {
-      MovieRatingsResponse response = await _movieApiClient.getMovieRatings(id);
-      return response;
+      MovieRatingsResponse response =
+          await _movieApiClient.getMovieRatings(titleId: id);
+      return Resource.success(response);
     } catch (e) {
-      rethrow;
+      return Resource.failure(errorMessage: "error");
     }
   }
 }

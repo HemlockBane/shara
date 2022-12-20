@@ -21,17 +21,18 @@ class _MovieApiClient implements MovieApiClient {
   String? baseUrl;
 
   @override
-  Future<MovieListResponse> findMovie(
-    title,
+  Future<MovieListResponse> findMovie({
+    required title,
     titleType,
     limit,
-  ) async {
+  }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'title': title,
       r'titleType': titleType,
       r'limit': limit,
     };
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio
@@ -52,7 +53,7 @@ class _MovieApiClient implements MovieApiClient {
   }
 
   @override
-  Future<MovieDetailsResponse> getMovieDetails(titleId) async {
+  Future<MovieDetailsResponse> getMovieDetails({required titleId}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'tconst': titleId};
     final _headers = <String, dynamic>{};
@@ -75,7 +76,8 @@ class _MovieApiClient implements MovieApiClient {
   }
 
   @override
-  Future<List<MovieSynopsisResponse>> getMovieSynopsis(titleId) async {
+  Future<List<MovieSynopsisResponse>> getMovieSynopsis(
+      {required titleId}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'tconst': titleId};
     final _headers = <String, dynamic>{};
@@ -101,7 +103,7 @@ class _MovieApiClient implements MovieApiClient {
   }
 
   @override
-  Future<MovieRatingsResponse> getMovieRatings(titleId) async {
+  Future<MovieRatingsResponse> getMovieRatings({required titleId}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'tconst': titleId};
     final _headers = <String, dynamic>{};
