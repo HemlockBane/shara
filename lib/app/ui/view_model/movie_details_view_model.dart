@@ -10,41 +10,34 @@ import 'package:shara_movies/core/data/model/movie.dart';
 import 'package:shara_movies/core/data/resource.dart';
 import 'package:shara_movies/core/di/di.dart';
 
-class MovieDetailsUiState{}
+import 'movie_details_ui_state.dart';
 
-class LoadingState extends MovieDetailsUiState {}
 
-class SuccessState extends MovieDetailsUiState {
-  SuccessState({
-    required this.data,
-  });
-
-  final Movie? data;
-}
-
-class FailureState extends MovieDetailsUiState {}
 
 class MovieDetailsViewModel{
   MovieDetailsViewModel({GetMovieDetailsUseCase? getMovieDetailsUseCase})
       : _getMovieDetailsUseCase = getMovieDetailsUseCase ?? locator<GetMovieDetailsUseCase>();
 
   final GetMovieDetailsUseCase _getMovieDetailsUseCase;
-  final _uiStateController = BehaviorSubject<MovieDetailsUiState>.seeded(LoadingState());
+  static const loadingState = MovieDetailsUiState.loading();
+  final _uiStateController = BehaviorSubject<MovieDetailsUiState>.seeded(loadingState);
 
   Stream<MovieDetailsUiState> get uiStateStream =>
-      _uiStateController.distinct();
+      _uiStateController.stream;
 
-  void getMovieDetails({required String id})async{
-    if (_uiStateController.state is! LoadingState){
-      _uiStateController.emit(LoadingState());
+  void getMovieDetails({required String id}) async {
+    if (_uiStateController.state is! Loading) {
+      _uiStateController.emit(loadingState);
     }
 
     final movieDetailsStream = _getMovieDetailsUseCase.getMovieDetails(id);
-    await for (final event in movieDetailsStream){
-      if (event is Failure){
-        _uiStateController.emit(FailureState());
-      }else{
-        _uiStateController.emit(SuccessState(data: event.data));
+    await for (final event in movieDetailsStream) {
+      if (event.isFailure()) {
+        const failedState = MovieDetailsUiState.failed();
+        _uiStateController.emit(failedState);
+      } else {
+        final successState = MovieDetailsUiState.success(data: event.data);
+        _uiStateController.emit(successState);
       }
     }
   }

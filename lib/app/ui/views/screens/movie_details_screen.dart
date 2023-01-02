@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shara_movies/app/ui/view_model/movie_details_ui_state.dart';
 import 'package:shara_movies/app/ui/view_model/movie_details_view_model.dart';
 import 'package:shara_movies/app/ui/views/widgets/widgets.dart';
 import 'package:shara_movies/core/data/model/movie.dart';
@@ -64,19 +65,30 @@ class _MovieDetailsViewState extends State<MovieDetailsView> {
 
   @override
   Widget build(BuildContext context) {
-
-
-    final uiState = _detailsViewModel.uiStateStream;
+    final uiState = _detailsViewModel.uiStateStream.distinct();
 
     return Scaffold(
       appBar: AppBar(title: Text(widget.args.title ?? "")),
       body: StreamBuilder(
         stream: uiState,
         builder: (ctx, AsyncSnapshot<MovieDetailsUiState> snapshot) {
-          
+          final connectionState = snapshot.connectionState;
+          final state = snapshot.data;
+          final error = snapshot.error;
+          final hasData = snapshot.hasData;
+          final hasError = snapshot.hasError;
 
+          if (state == null) return const LoadingView();
+
+          final ui = state.when(
+            success: (data) => _SuccessView(movie: data),
+            loading: () => const LoadingView(),
+            failed: (message) => FailureView(message: message ?? ""),
+          );
+
+          return ui;
         },
-      )
+      ),
     );
   }
 }
@@ -90,7 +102,9 @@ class _SuccessView extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView(
       children: [
-        MovieImageBanner(url: movie?.image?.url ?? "",),
+        MovieImageBanner(
+          url: movie?.image?.url ?? "",
+        ),
         Padding(
           padding: const EdgeInsets.only(left: 8, right: 8),
           child: Column(
@@ -100,11 +114,14 @@ class _SuccessView extends StatelessWidget {
                 movie?.title ?? "--",
                 style: const TextStyle(fontSize: 24),
               ),
-              Text(movie?.year?.toString() ?? "", style: const TextStyle(fontSize: 18)),
+              Text(movie?.year?.toString() ?? "",
+                  style: const TextStyle(fontSize: 18)),
             ],
           ),
         ),
-        MovieSynopsis(synopsis: movie?.synopsis,)
+        MovieSynopsis(
+          synopsis: movie?.synopsis,
+        )
       ],
     );
   }
@@ -138,11 +155,17 @@ class MovieSynopsis extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text("Synopsis", style: TextStyle(fontSize: 22),),
+          const Text(
+            "Synopsis",
+            style: TextStyle(fontSize: 22),
+          ),
           const SizedBox(
             height: 5,
           ),
-          Text(synopsis ?? "", style: const TextStyle(fontSize: 18),),
+          Text(
+            synopsis ?? "",
+            style: const TextStyle(fontSize: 18),
+          ),
         ],
       ),
     );

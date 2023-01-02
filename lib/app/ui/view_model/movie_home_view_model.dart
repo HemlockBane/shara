@@ -27,29 +27,30 @@ class MovieHomeViewModel extends Cubit<MovieHomeUiState> {
       : _movieRepository = movieRepository ?? locator<MovieRepository>(),
         super(DefaultState());
 
+  static const int debounceTimeInMillis = 300;
+  static const Duration debounceDuration = Duration(milliseconds: debounceTimeInMillis);
+
   final MovieRepository _movieRepository;
 
-  static const int debounceTimeInMillis = 300;
-  static const Duration debounceDuration =
-      Duration(milliseconds: debounceTimeInMillis);
 
   void findMovie({required String title}) async {
-    if (title.isEmpty) {
-      emit(DefaultState());
-    } else {
-      Stream.value(title)
-          .debounce((event) => TimerStream(event, debounceDuration))
-          .listen(_triggerSearch);
-    }
+    Stream.value(title)
+        .debounce((event) => TimerStream(event, debounceDuration))
+        .distinct()
+        .listen(_triggerSearch);
   }
 
   Future<void> _triggerSearch(String title) async {
-    emit(LoadingState());
-    final response = await _movieRepository.findMovie(title: title);
-    if (response.isSuccess()) {
-      emit(SuccessState(data: response.data ?? []));
-    } else if (response.isFailure()) {
-      emit(FailureState());
+    if (title.isEmpty) {
+      emit(DefaultState());
+    } else {
+      emit(LoadingState());
+      final response = await _movieRepository.findMovie(title: title);
+      if (response.isSuccess()) {
+        emit(SuccessState(data: response.data ?? []));
+      } else if (response.isFailure()) {
+        emit(FailureState());
+      }
     }
   }
 }
